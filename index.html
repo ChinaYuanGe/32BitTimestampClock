@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta charset="utf-8">
+        <title>32Bit UTC Clock</title>
+        <style>
+            body *{
+                color:white;
+            }
+            body{
+                background-color:black;
+            }
+            .time{
+                margin:.5em 0;
+                display:flex;
+                flex-wrap: nowrap;
+                justify-content: center;
+                font-size:4vw;
+            }
+            .time.bin div{
+                margin:0 .5em;
+            }
+            .time.etc div{
+                margin:0 1em;
+            }
+            progress{
+                width:100%;
+                height:4px;
+                appearance: none;
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                position: relative;
+            }
+            progress::-webkit-progress-bar{
+                overflow: hidden;
+                background-color: transparent;
+            }
+            progress::-webkit-progress-value{
+                position: absolute;
+                left: 0;
+                right: 0;
+                margin: auto;
+                background-color: white;
+            }
+            
+            @media SCREEN AND (max-width:100vmin){
+                .time{
+                    font-size:2.5em;
+                    flex-wrap: wrap;
+                }
+            }
+        </style>
+        <script>
+            function getNumberBinaryStr(val,padStart){
+                return parseInt(val).toString(2).padStart(padStart,'0'); 
+            }
+            function int32reval(val){
+                if(val < 0x0){
+                    return NaN;
+                }
+                else if(val > 0xffffffff){
+                    return NaN;
+                }
+                else if(val < 0x7fffffff){
+                    return val;
+                }
+                else if(val > 0x7fffffff){
+                    return val - 0xffffffff - 1;
+                }
+                else return val;
+            }
+            function tickfunc(){
+                var currentTimestampValue = parseInt(new Date().valueOf() / 1000);
+                var nowtimestamp = int32reval(currentTimestampValue);
+                var nowDate = new Date(nowtimestamp * 1000);
+                var binaryDate = getNumberBinaryStr(currentTimestampValue,32);
+                var outBinaryStr = '';
+                for(var i=0;i<4;i++){
+                    let val = binaryDate.slice(i*8,(i*8)+8);
+                    outBinaryStr += '<div>' + val + '</div>';
+                }
+                document.getElementById("binarytime").innerHTML = outBinaryStr;
+                document.getElementById("hextime").innerText = "0x"+currentTimestampValue.toString(16);
+                document.getElementById("demtime").innerText = nowtimestamp.toString();
+                document.getElementById("displayDate").innerText = nowDate.getUTCFullYear().toString().padStart(2,'0') + "-" + (nowDate.getUTCMonth()+1).toString().padStart(2,'0') + "-" + nowDate.getUTCDate().toString().padStart(2,'0');
+                document.getElementById("displayTime").innerText = nowDate.getUTCHours().toString().padStart(2,'0') + ":" + nowDate.getUTCMinutes().toString().padStart(2,'0') + ":" + nowDate.getUTCSeconds().toString().padStart(2,'0');
+                document.getElementById("valueofend").setAttribute("value",parseInt((((nowtimestamp / 0x7fffffff))*1000)).toString());
+            }
+            window.addEventListener("DOMContentLoaded",function(ev){
+                tickfunc();
+                setInterval(function(){
+                    tickfunc();
+                },100)
+            });
+        </script>
+    </head>
+    <body>
+        <div style="position: fixed;margin:auto;top: 0;left:0;right:0;bottom: 0;height:fit-content;text-align: center;">
+        <div id="binarytime" class="time bin">
+            <div>01111111</div>
+            <div>11111111</div>
+            <div>11111111</div>
+            <div>11111111</div>
+        </div>
+        <progress id="valueofend" value="1000" max="1000"></progress>
+        <div class="time etc">
+            <div id="hextime">0x7FFFFFFF</div>
+            <div id="demtime">2,147,483,647</div>
+        </div>
+        <div class="time etc">
+            <div id="displayDate">1970-01-01</div>
+            <div id="displayTime">00:00:00</div>
+        </div>
+        <div style="font-size:2em;text-align:center">32 Bit UTC Clock</div>
+    </div>
+    </body>
+</html>
