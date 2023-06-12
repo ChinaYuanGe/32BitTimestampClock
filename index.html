@@ -3,7 +3,7 @@
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta charset="utf-8">
-        <title>32Bit UTC Clock</title>
+        <title>32Bit Timestamp Clock</title>
         <style>
             body *{
                 color:white;
@@ -83,9 +83,12 @@
                 document.getElementById("binarytime").innerHTML = outBinaryStr;
                 document.getElementById("hextime").innerText = "0x"+currentTimestampValue.toString(16);
                 document.getElementById("demtime").innerText = nowtimestamp.toString();
-                document.getElementById("displayDate").innerText = nowDate.getUTCFullYear().toString().padStart(2,'0') + "-" + (nowDate.getUTCMonth()+1).toString().padStart(2,'0') + "-" + nowDate.getUTCDate().toString().padStart(2,'0');
-                document.getElementById("displayTime").innerText = nowDate.getUTCHours().toString().padStart(2,'0') + ":" + nowDate.getUTCMinutes().toString().padStart(2,'0') + ":" + nowDate.getUTCSeconds().toString().padStart(2,'0');
+                document.getElementById("displayDate").innerText = nowDate.getFullYear().toString().padStart(2,'0') + "-" + (nowDate.getMonth()+1).toString().padStart(2,'0') + "-" + nowDate.getDate().toString().padStart(2,'0');
+                document.getElementById("displayTime").innerText = nowDate.getHours().toString().padStart(2,'0') + ":" + nowDate.getMinutes().toString().padStart(2,'0') + ":" + nowDate.getSeconds().toString().padStart(2,'0');
+                var offset = -(nowDate.getTimezoneOffset() / 60);
+                document.getElementById("displayOffset").innerText =  "UTC" + (offset > 0? "+" + offset : offset.toString());
                 document.getElementById("valueofend").setAttribute("value",parseInt((((nowtimestamp / 0x7fffffff))*1000)).toString());
+                
             }
             window.addEventListener("DOMContentLoaded",function(ev){
                 tickfunc();
@@ -111,8 +114,9 @@
         <div class="time etc">
             <div id="displayDate">1970-01-01</div>
             <div id="displayTime">00:00:00</div>
+            <div id="displayOffset">+0</div>
         </div>
-        <div style="font-size:2em;text-align:center">32 Bit UTC Clock</div>
+        <div style="font-size:2em;text-align:center">32 Bit Timestamp Clock</div>
     </div>
     </body>
 </html>
